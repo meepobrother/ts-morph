@@ -15,7 +15,7 @@ export class TypedNodeStructurePrinter extends Printer<TypedNodeStructure> {
 
         type = type || "any";
 
-        const typeText = this.getTextWithQueuedChildIndentation(writer, type);
+        const typeText = this.getText(writer, type);
         if (!StringUtils.isNullOrWhitespace(typeText))
             writer.write(`${this.separator} ${typeText}`);
     }

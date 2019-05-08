@@ -12,12 +12,14 @@ export class EnumMemberStructurePrinter extends NodePrinter<OptionalKind<EnumMem
 
     protected printTextInternal(writer: CodeBlockWriter, structure: OptionalKind<EnumMemberStructure>) {
         this.factory.forJSDoc().printDocs(writer, structure.docs);
-        writer.write(structure.name);
-        if (typeof structure.value === "string")
-            writer.write(` = `).quote(structure.value);
-        else if (typeof structure.value === "number")
-            writer.write(` = ${structure.value}`);
-        else
-            this.factory.forInitializerExpressionableNode().printText(writer, structure);
+        writer.withQueuedIndentationLevel(writer.getIndentationLevel() + 1, () => {
+            writer.write(structure.name);
+            if (typeof structure.value === "string")
+                writer.write(` = `).quote(structure.value);
+            else if (typeof structure.value === "number")
+                writer.write(` = ${structure.value}`);
+            else
+                this.factory.forInitializerExpressionableNode().printText(writer, structure);
+        });
     }
 }

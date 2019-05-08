@@ -13,12 +13,15 @@ export class PropertyDeclarationStructurePrinter extends NodePrinter<OptionalKin
     protected printTextInternal(writer: CodeBlockWriter, structure: OptionalKind<PropertyDeclarationStructure>) {
         this.factory.forJSDoc().printDocs(writer, structure.docs);
         this.factory.forDecorator().printTexts(writer, structure.decorators);
-        this.factory.forModifierableNode().printText(writer, structure);
-        writer.write(structure.name);
-        writer.conditionalWrite(structure.hasQuestionToken, "?");
-        writer.conditionalWrite(structure.hasExclamationToken && !structure.hasQuestionToken, "!");
-        this.factory.forTypedNode(":").printText(writer, structure);
-        this.factory.forInitializerExpressionableNode().printText(writer, structure);
-        writer.write(";");
+
+        writer.withQueuedIndentationLevel(writer.getIndentationLevel() + 1, () => {
+            this.factory.forModifierableNode().printText(writer, structure);
+            writer.write(structure.name);
+            writer.conditionalWrite(structure.hasQuestionToken, "?");
+            writer.conditionalWrite(structure.hasExclamationToken && !structure.hasQuestionToken, "!");
+            this.factory.forTypedNode(":").printText(writer, structure);
+            this.factory.forInitializerExpressionableNode().printText(writer, structure);
+            writer.write(";");
+        });
     }
 }

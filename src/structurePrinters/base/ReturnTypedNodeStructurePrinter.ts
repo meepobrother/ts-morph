@@ -15,7 +15,7 @@ export class ReturnTypedNodeStructurePrinter extends Printer<ReturnTypedNodeStru
 
         returnType = returnType || "void";
 
-        const returnTypeText = this.getTextWithQueuedChildIndentation(writer, returnType);
+        const returnTypeText = this.getText(writer, returnType);
         if (!StringUtils.isNullOrWhitespace(returnTypeText))
             writer.write(`: ${returnTypeText}`);
     }

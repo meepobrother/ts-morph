@@ -13,19 +13,22 @@ export class InterfaceDeclarationStructurePrinter extends NodePrinter<OptionalKi
 
     protected printTextInternal(writer: CodeBlockWriter, structure: OptionalKind<InterfaceDeclarationStructure>) {
         this.factory.forJSDoc().printDocs(writer, structure.docs);
-        this.factory.forModifierableNode().printText(writer, structure);
-        writer.write(`interface ${structure.name}`);
-        this.factory.forTypeParameterDeclaration().printTextsWithBrackets(writer, structure.typeParameters);
-        writer.space();
 
-        if (structure.extends != null) {
-            const extendsText = structure.extends instanceof Array
-                ? structure.extends.map(i => this.getTextWithQueuedChildIndentation(writer, i)).join(", ")
-                : this.getTextWithQueuedChildIndentation(writer, structure.extends);
+        writer.withQueuedIndentationLevel(writer.getIndentationLevel() + 1, () => {
+            this.factory.forModifierableNode().printText(writer, structure);
+            writer.write(`interface ${structure.name}`);
+            this.factory.forTypeParameterDeclaration().printTextsWithBrackets(writer, structure.typeParameters);
+            writer.space();
 
-            if (!StringUtils.isNullOrWhitespace(extendsText))
-                writer.write(`extends ${extendsText} `);
-        }
+            if (structure.extends != null) {
+                const extendsText = structure.extends instanceof Array
+                    ? structure.extends.map(i => this.getTextWithQueuedChildIndentation(writer, i)).join(", ")
+                    : this.getTextWithQueuedChildIndentation(writer, structure.extends);
+
+                if (!StringUtils.isNullOrWhitespace(extendsText))
+                    writer.write(`extends ${extendsText} `);
+            }
+        });
 
         writer.inlineBlock(() => {
             this.factory.forTypeElementMemberedNode().printText(writer, structure);

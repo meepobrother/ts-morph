@@ -12,9 +12,12 @@ export class IndexSignatureDeclarationStructurePrinter extends NodePrinter<Optio
 
     protected printTextInternal(writer: CodeBlockWriter, structure: OptionalKind<IndexSignatureDeclarationStructure>) {
         this.factory.forJSDoc().printDocs(writer, structure.docs);
-        this.factory.forModifierableNode().printText(writer, structure);
-        writer.write(`[${structure.keyName || "key"}: ${structure.keyType || "string"}]`);
-        this.factory.forReturnTypedNode().printText(writer, structure);
-        writer.write(";");
+
+        writer.withQueuedIndentationLevel(writer.getIndentationLevel() + 1, () => {
+            this.factory.forModifierableNode().printText(writer, structure);
+            writer.write(`[${structure.keyName || "key"}: ${structure.keyType || "string"}]`);
+            this.factory.forReturnTypedNode().printText(writer, structure);
+            writer.write(";");
+        });
     }
 }

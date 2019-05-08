@@ -18,11 +18,14 @@ export class ParameterDeclarationStructurePrinter extends NodePrinter<OptionalKi
             throw new NotImplementedError("Not implemented scenario where parameter declaration structure doesn't have a name. Please open an issue if you need this.");
 
         this.factory.forDecorator().printTextsInline(writer, structure.decorators);
-        this.factory.forModifierableNode().printText(writer, structure);
-        writer.conditionalWrite(structure.isRestParameter, "...");
-        writer.write(structure.name);
-        writer.conditionalWrite(structure.hasQuestionToken, "?");
-        this.factory.forTypedNode(":", structure.hasQuestionToken).printText(writer, structure);
-        this.factory.forInitializerExpressionableNode().printText(writer, structure);
+
+        writer.withQueuedIndentationLevel(writer.getIndentationLevel() + 1, () => {
+            this.factory.forModifierableNode().printText(writer, structure);
+            writer.conditionalWrite(structure.isRestParameter, "...");
+            writer.write(structure.name);
+            writer.conditionalWrite(structure.hasQuestionToken, "?");
+            this.factory.forTypedNode(":", structure.hasQuestionToken).printText(writer, structure);
+            this.factory.forInitializerExpressionableNode().printText(writer, structure);
+        });
     }
 }

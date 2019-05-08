@@ -12,13 +12,16 @@ export class MethodSignatureStructurePrinter extends NodePrinter<OptionalKind<Me
 
     protected printTextInternal(writer: CodeBlockWriter, structure: OptionalKind<MethodSignatureStructure>) {
         this.factory.forJSDoc().printDocs(writer, structure.docs);
-        writer.write(structure.name);
-        writer.conditionalWrite(structure.hasQuestionToken, "?");
-        this.factory.forTypeParameterDeclaration().printTextsWithBrackets(writer, structure.typeParameters);
-        writer.write("(");
-        this.factory.forParameterDeclaration().printTexts(writer, structure.parameters);
-        writer.write(")");
-        this.factory.forReturnTypedNode().printText(writer, structure);
-        writer.write(";");
+
+        writer.withQueuedIndentationLevel(writer.getIndentationLevel() + 1, () => {
+            writer.write(structure.name);
+            writer.conditionalWrite(structure.hasQuestionToken, "?");
+            this.factory.forTypeParameterDeclaration().printTextsWithBrackets(writer, structure.typeParameters);
+            writer.write("(");
+            this.factory.forParameterDeclaration().printTexts(writer, structure.parameters);
+            writer.write(")");
+            this.factory.forReturnTypedNode().printText(writer, structure);
+            writer.write(";");
+        });
     }
 }

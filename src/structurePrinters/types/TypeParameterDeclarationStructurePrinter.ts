@@ -27,12 +27,12 @@ export class TypeParameterDeclarationStructurePrinter extends NodePrinter<Option
 
         writer.write(structure.name);
         if (structure.constraint != null) {
-            const constraintText = this.getTextWithQueuedChildIndentation(writer, structure.constraint);
+            const constraintText = this.getText(writer, structure.constraint);
             if (!StringUtils.isNullOrWhitespace(constraintText))
                 writer.write(` extends ${constraintText}`);
         }
         if (structure.default != null) {
-            const defaultText = this.getTextWithQueuedChildIndentation(writer, structure.default);
+            const defaultText = this.getText(writer, structure.default);
             if (!StringUtils.isNullOrWhitespace(defaultText))
                 writer.write(` = ${defaultText}`);
         }
