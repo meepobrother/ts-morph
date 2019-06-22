@@ -75,6 +75,18 @@ export class WriterFunctions {
     static intersectionType(firstType: WriterFunctionOrValue, secondType: WriterFunctionOrValue, ...additionalTypes: WriterFunctionOrValue[]) {
         return getWriteFunctionForUnionOrIntersectionType("&", [firstType, secondType, ...additionalTypes]);
     }
+
+    /**
+     * Gets a writer function for writing a return statement returning the provided value.
+     * @param value - Value to be returned.
+     */
+    static returnStatement(value: WriterFunctionOrValue): WriterFunction {
+        return (writer: CodeBlockWriter) => {
+            writer.write("return ");
+            writeValue(writer, value);
+            writer.write(";");
+        };
+    }
 }
 
 function getWriteFunctionForUnionOrIntersectionType(separator: "|" | "&", args: WriterFunctionOrValue[]) {

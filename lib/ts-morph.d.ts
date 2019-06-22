@@ -331,13 +331,16 @@ export interface FileSystemHost {
     glob(patterns: ReadonlyArray<string>): string[];
 }
 
+/**
+ * Options for creating a project.
+ */
 export interface ProjectOptions {
     /**
      * Compiler options
      */
     compilerOptions?: CompilerOptions;
     /**
-     * File path to the tsconfig.json file
+     * File path to the tsconfig.json file.
      */
     tsConfigFilePath?: string;
     /**
@@ -361,6 +364,10 @@ export interface ProjectOptions {
      * @remarks Consider using `useVirtualFileSystem` instead.
      */
     fileSystem?: FileSystemHost;
+    /**
+     * Creates a resolution host for specifying custom module and/or type reference directive resolution.
+     */
+    resolutionHost?: ResolutionHostFactory;
 }
 
 /**
@@ -606,9 +613,20 @@ export declare class Project {
     formatDiagnosticsWithColorAndContext(diagnostics: ReadonlyArray<Diagnostic>, opts?: {
             newLineChar?: "\n" | "\r\n";
         }): string;
+    /**
+     * Gets a ts.ModuleResolutionHost for the project.
+     */
+    getModuleResolutionHost(): ts.ModuleResolutionHost;
 }
 
+/**
+ * Options for creating a source file.
+ */
 export interface SourceFileCreateOptions {
+    /**
+     * Whether a source file should be overwritten if it exists. Defaults to false.
+     * @remarks When false, the method will throw when a file exists.
+     */
     overwrite?: boolean;
 }
 
@@ -1928,6 +1946,11 @@ export declare class WriterFunctions {
      * Gets a writer function for writing an intersection type.
      */
     static intersectionType(firstType: WriterFunctionOrValue, secondType: WriterFunctionOrValue, ...additionalTypes: WriterFunctionOrValue[]): (writer: CodeBlockWriter) => void;
+    /**
+     * Gets a writer function for writing a return statement returning the provided value.
+     * @param value - Value to be returned.
+     */
+    static returnStatement(value: WriterFunctionOrValue): WriterFunction;
 }
 
 export declare type WriterFunctionOrValue = string | number | WriterFunction;
@@ -9046,6 +9069,21 @@ export interface RenameOptions {
  */
 export interface UserPreferences extends ts.UserPreferences {
 }
+
+/**
+ * Host for implementing custom module and/or type reference directive resolution.
+ */
+export interface ResolutionHost {
+    resolveModuleNames?: ts.LanguageServiceHost["resolveModuleNames"];
+    getResolvedModuleWithFailedLookupLocationsFromCache?: ts.LanguageServiceHost["getResolvedModuleWithFailedLookupLocationsFromCache"];
+    resolveTypeReferenceDirectives?: ts.LanguageServiceHost["resolveTypeReferenceDirectives"];
+}
+
+/**
+ * Factory used to create a resolution host.
+ * @remarks The compiler options are retrieved via a function in order to get the project's current compiler options.
+ */
+export declare type ResolutionHostFactory = (moduleResolutionHost: ts.ModuleResolutionHost, getCompilerOptions: () => ts.CompilerOptions) => ResolutionHost;
 
 export declare class LanguageService {
     private readonly _compilerObject;
