@@ -1,8 +1,8 @@
 ---
-title: Manipulating the AST
+title: Manipulating Source Files
 ---
 
-## Manipulating the AST
+## Manipulating Source Files
 
 Most information about manipulation can be found in the [Details](../details) section. This section only contains general information about manipulation.
 
@@ -32,14 +32,15 @@ await sourceFile.moveImmediately("movedFile.ts");
 
 await directory.save();
 await directory.deleteImmediately();
-// todo: these are coming soon
-await sourceFile.copyImmediately("CopiedDir");
-await sourceFile.moveImmediately("MovedDir");
+await directory.copyImmediately("CopiedDir");
+await directory.moveImmediately("MovedDir");
 ```
 
 ### Replacing any node with new text
 
-This can be achieved with the `.replaceWithText(...)` method that exists on any node.
+Use the `.replaceWithText(...)` method that exists on any node.
+
+This will replace the text from the `Node#getStart(true)` position (start position with js docs) to `Node#getEnd()`. Use `Node#getText(true)` to get all the text that will be replaced.
 
 #### Example
 

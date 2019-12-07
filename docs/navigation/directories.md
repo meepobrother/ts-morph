@@ -42,13 +42,13 @@ project.getDirectoryOrThrow("path/to/directory");
 On a directory:
 
 ```ts
-const childDirectory = directory.addExistingDirectory("childDir"); // or addExistingDirectoryIfExists
+const childDirectory = directory.addDirectoryAtPath("childDir"); // or addDirectoryAtPathIfExists
 ```
 
 Or main `project` object:
 
 ```ts
-const directory = project.addExistingDirectory("path/to/dir"); // or addExistingDirectoryIfExists
+const directory = project.addDirectoryAtPath("path/to/dir"); // or addDirectoryAtPathIfExists
 ```
 
 ### Creating
@@ -110,7 +110,7 @@ parentDir.isAncestorOf(childSourceFile);      // true
 ```ts
 const sourceFiles = directory.getSourceFiles();
 const sourceFile = directory.getSourceFile("someFile.ts"); // or getSourceFileOrThrow
-const indexFile = directory.addExistingSourceFile("index.ts"); // or addExistingSourceFileIfExists
+const indexFile = directory.addSourceFileAtPath("index.ts"); // or addSourceFileAtPathIfExists
 const descendantSourceFiles = directory.getDescendantSourceFiles();
 
 directory.createSourceFile("someFile.ts");
@@ -235,6 +235,28 @@ If you want to delete a directory immediately from the file system, then use the
 await directory.deleteImmediately();
 // or
 directory.deleteImmediatelySync();
+```
+
+This isn't recommended though because it could possibly leave the file system in a halfway state if your code errors before it's done.
+
+### Clearing
+
+Call:
+
+```ts
+directory.clear();
+```
+
+This will delete the directory's descendants in memory and queue a delete and mkdir operation to the file system.
+
+#### Clearing immediately
+
+If you want to do this operation immediatley to the file system, then use the following:
+
+```ts
+await directory.clearImmediately();
+// or
+directory.clearImmediatelySync();
 ```
 
 This isn't recommended though because it could possibly leave the file system in a halfway state if your code errors before it's done.

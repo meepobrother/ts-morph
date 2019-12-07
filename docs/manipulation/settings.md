@@ -4,7 +4,7 @@ title: Manipulation Settings
 
 ## Manipulation Settings
 
-The manipulation settings can be set when creating the main AST object:
+The manipulation settings can be set when creating the main `Project` object:
 
 ```ts
 import { Project, QuoteKind, NewLineKind, IndentationText } from "ts-morph";
@@ -17,7 +17,14 @@ const project = new Project({
         // LineFeed or CarriageReturnLineFeed
         newLineKind: NewLineKind.LineFeed,
         // Single or Double
-        quoteKind: QuoteKind.Double
+        quoteKind: QuoteKind.Double,
+        // Whether to change shorthand property assignments to property assignments
+        // and add aliases to import & export specifiers (see more information in
+        // the renaming section of the documentation).
+        usePrefixAndSuffixTextForRename: false,
+        // Whether to use trailing commas in multi-line scenarios where trailing
+        // commas would be used.
+        useTrailingCommas: false
     }
 });
 ```
@@ -32,12 +39,13 @@ const project = new Project({
 
 ### Details
 
-Get more details about the settings by looking at the `manipulationSettings` property on the main AST object:
+Get more details about the settings by looking at the `manipulationSettings` property on the main `Project` object:
 
 ```ts
 project.manipulationSettings.getIndentationText();
 project.manipulationSettings.getNewLineKind();
 project.manipulationSettings.getQuoteKind();
+project.manipulationSettings.getUsePrefixAndSuffixTextForRename();
 ```
 
 ### Updating

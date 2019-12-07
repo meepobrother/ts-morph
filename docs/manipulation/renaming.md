@@ -44,6 +44,61 @@ myEnum.rename("SomeOtherName", {
 });
 ```
 
+### Renaming with prefix and suffix text
+
+**Note:** This feature is only supported when using TypeScript 3.4+
+
+By default, renames will not change shorthand property assignments or add aliases to import & export specifiers.
+
+For example, renaming the `a` variable declaration to `b`...
+
+```ts
+const a = 5;
+const x = { a };
+
+export { a };
+```
+
+...will do the following:
+
+```ts
+const b = 5;
+const x = { b };
+
+export { b };
+```
+
+This behaviour can be changed by enabling the `usePrefixAndSuffixText` setting, which will do the following:
+
+```ts
+const b = 5;
+const x = { a: b };
+
+export { b as a };
+```
+
+This behaviour change can be specified when renaming:
+
+```ts setup: let varA: VariableDeclaration;
+varA.rename("SomeOtherName", {
+    usePrefixAndSuffixText: true
+});
+```
+
+Or globally:
+
+```ts
+const project = new Project({
+    manipulationSettings: {
+        usePrefixAndSuffixTextForRename: true
+    }
+});
+// or
+project.manipulationSettings.set({
+    usePrefixAndSuffixTextForRename: true
+});
+```
+
 ### Renaming Files or Directories
 
 See:

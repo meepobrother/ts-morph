@@ -63,7 +63,7 @@ import { Project } from "ts-morph";
 
 // queue up all the source files to be deleted
 const project = new Project();
-project.addExistingSourceFiles("folder/**/*.ts")
+project.addSourceFilesAtPaths("folder/**/*.ts")
 
 project.getSourceFileOrThrow("someFile.ts").delete();
 project.getSourceFileOrThrow("someOtherFile.ts").delete();
@@ -138,7 +138,7 @@ sourceFile.moveImmediatelySync("NewFile2.ts");
 Refresh the source file from the file system:
 
 ```ts
-import {FileSystemRefreshResult} from "ts-morph";
+import { FileSystemRefreshResult } from "ts-morph";
 
  // returns: FileSystemRefreshResult (NoChange, Updated, Deleted)
 const result = await sourceFile.refreshFromFileSystem(); // or refreshFromFileSystemSync()
@@ -151,28 +151,29 @@ If the file was _deleted_: The source file will be removed and all its nodes for
 
 ### Remove
 
-Remove a source file from the AST by calling:
+Remove a source file from the project by calling:
 
 ```ts
-project.removeSourceFile(sourceFile); // returns: boolean (if was removed)
+sourceFile.forget();
 ```
 
-Note: This does not delete the file from the file system. To do delete it, call `.delete()`.
-
-### Referenced files
-
-This returns any files that are referenced via `/// <reference path="..." />` comments:
+Or alternatively:
 
 ```ts
-const referencedFiles = sourceFile.getReferencedFiles();
+project.removeSourceFile(sourceFile); // returns: boolean (true if was removed)
 ```
 
-### Type reference directives
+Note: This does not delete the file from the file system. To do delete it, call `#delete()`.
 
-This returns any files that are referenced via `/// <reference types="..." />` comments:
+### Reference comments
 
 ```ts
+// gets `/// <reference path="..." />` comments
+const pathReferenceDirectives = sourceFile.getPathReferenceDirectives();
+// gets `/// <reference types="..." />` comments
 const typeReferenceDirectives = sourceFile.getTypeReferenceDirectives();
+// gets `/// <reference lib="..." />` comments
+const libReferenceDirectives = sourceFile.getLibReferenceDirectives();
 ```
 
 ### Import Declarations
@@ -208,10 +209,38 @@ Getting the source files that reference this source file in nodes like import de
 const referencingSourceFiles = sourceFile.getReferencingSourceFiles();
 ```
 
-To get the nodes that reference the source file in other source files, use:
+To get the nodes that reference the source file in other source files:
 
 ```ts
 const referencingNodes = sourceFile.getReferencingNodesInOtherSourceFiles();
+```
+
+To get the string literals that reference this source file in other source files:
+
+```ts
+const referencingLiterals = sourceFile.getReferencingLiteralsInOtherSourceFiles();
+```
+
+### Getting referenced files
+
+The opposite of the referencing files, is the referenced files—files that are referenced in nodes within the current file.
+
+```ts
+const referencedSourceFiles = sourceFile.getReferencedSourceFiles();
+```
+
+To get the nodes that reference other source files:
+
+```ts
+const nodesReferencingOtherSourceFiles = sourceFile.getNodesReferencingOtherSourceFiles();
+```
+
+To get the string literals that reference other source files:
+
+```ts
+const literalsReferencingOtherSourceFiles = sourceFile.getLiteralsReferencingOtherSourceFiles();
+// or to get all the literals that reference a module (and may not have been resolved to a source file)
+const importLiterals = sourceFile.getImportStringLiterals();
 ```
 
 ### Relative File Paths

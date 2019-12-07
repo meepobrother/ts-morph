@@ -17,7 +17,7 @@ Search autocomplete for methods like `.getChildren()`, `.getParent()`, `.getFirs
 
 Many exist. If you find one you would really like, then please [open an issue](https://github.com/dsherret/ts-morph/issues).
 
-### `getChildren()` and `forEachChild(child => ...)`
+### getChildren() and forEachChild(child => ...)
 
 In general, you can easily navigate the tree by using methods such as `.getClasses()`, `.getClass('MyClass')`, `.getNamespaces()`, and so on, but in some cases you might want to get all the child nodes.
 
@@ -36,23 +36,15 @@ const allChildren = node.getChildren();
 node.forEachChild(node => {
     console.log(node.getText());
 });
-```
 
-#### Traversal Control
-
-One major difference between the `.forEachChild` method in ts-morph and the compiler API, is that returning a truthy value in the callback will not stop iteration. If you wish to stop iteration, then use the `stop` method on the second parameter:
-
-```ts
-node.forEachChild((node, traversal) => {
-    console.log(node.getText());
-
-    // stop iterating when the node is a class declaration
-    if (node.getKind() === SyntaxKind.ClassDeclaration)
-        traversal.stop();
+const classDec = node.forEachChild(node => {
+    if (TypeGuards.isClassDeclaration(node))
+        return node; // stops iterating over the children and returns this value
+    return undefined; // return a falsy value or no value to continue iterating
 });
 ```
 
-### `forEachDescendant`
+### forEachDescendant
 
 If you wish to iterate all the descendants, then use the `forEachDescendant` method:
 
@@ -75,11 +67,10 @@ for (const sourceFile of sourceFiles)
 
 #### Traversal Control
 
-Traversal can similarly be controlled with the second parameter as with `forEachChild`, but
-`forEachDescendant` offers a bit more control:
+Traversal can be controlled with the second parameter:
 
 ```ts
-node.forEachDescendant((node, traversal) => {
+const result = node.forEachDescendant((node, traversal) => {
     switch (node.getKind()) {
         case SyntaxKind.ClassDeclaration:
             // skips traversal of the current node's descendants
@@ -93,6 +84,11 @@ node.forEachDescendant((node, traversal) => {
             // stops traversal completely
             traversal.stop();
             break;
+        case SyntaxKind.InterfaceDeclaration:
+            // stops traversal completely and returns this value
+            return node;
     }
+
+    return undefined;
 });
 ```
